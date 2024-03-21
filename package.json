@@ -1,0 +1,17 @@
+{
+  "name": "ui-test-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:full": "npx playwright test tests/ui/ --project=Chromium --headed",
+    "test:ui": "npx playwright test --grep @ui tests/ui/ --project=Chromium --headed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.42.1",
+    "@types/node": "^20.11.30"
+  }
+}
