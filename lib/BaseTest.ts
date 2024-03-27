@@ -1,10 +1,11 @@
 import { test as baseTest } from '@playwright/test';
+import {HomePage} from "../pages/HomePage";
 
 const test = baseTest.extend<{
-
+    homePage: HomePage;
 }>({
-    /*webActions: async ({page, context}, use) => {
-        await use(new WebActions(page, context));
-    },*/
+    homePage: async ({page, context}, use) => {
+        await use(new HomePage(page, context));
+    },
 });
 export default test;

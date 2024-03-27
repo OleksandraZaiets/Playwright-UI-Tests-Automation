@@ -28,18 +28,17 @@ const config: PlaywrightTestConfig = {
     // Video recording settings for tests
     video: 'retain-on-failure', // Keep videos only for failed tests
 
-    // Settings for geolocation, language, and timezone
-    locale: 'en-US',
-    timezoneId: 'America/New_York',
-
     // Other settings can include cookies, headers, browser window size, etc.
+    trace: 'on'
   },
 
   // Configuration for projects allows running tests with different configurations
   projects: [
     {
       name: 'Chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'],
+        baseURL: 'http://uitestingplayground.com/home'
+      },
     },
     {
       name: 'Firefox',
@@ -50,14 +49,6 @@ const config: PlaywrightTestConfig = {
       use: { ...devices['Desktop Safari'] },
     },
   ],
-
-  // Configuration for starting a web server before running tests
-  webServer: {
-    command: 'npm run start', // Command to start the server
-    port: 3000, // Server port
-    timeout: 120_000, // Timeout to wait for the server to start
-    reuseExistingServer: !process.env.CI // Reuse server in non-CI environments
-  },
 
   // Plugins
   reporter: 'html', // Use the HTML reporter
