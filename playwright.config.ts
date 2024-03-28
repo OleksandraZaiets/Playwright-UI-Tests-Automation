@@ -15,7 +15,7 @@ const config: PlaywrightTestConfig = {
   workers: process.env.CI ? 2 : undefined,
 
   // Timeout for tests before they are considered failed (in milliseconds)
-  timeout: 10000,
+  timeout: 25000,
 
   // Global variables accessible in tests
   use: {

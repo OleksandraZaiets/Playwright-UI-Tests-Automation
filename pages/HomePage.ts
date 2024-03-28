@@ -18,6 +18,8 @@ export class HomePage {
     readonly ccLink: Locator;
     readonly pngUrl: string;
     readonly ccUrl: string;
+    readonly informationTitles: Locator;
+    readonly containerTitles: Locator;
 
     constructor (page: Page, context: BrowserContext) {
         this.page = page;
@@ -37,6 +39,8 @@ export class HomePage {
         this.ccLink = page.getByRole(`link`, { name: `CC 4.0 BY-NC` });
         this.pngUrl = `/image`;
         this.ccUrl = `/licenses`;
+        this.informationTitles = page.locator(`#overview .row .col-sm`);
+        this.containerTitles = page.locator(`section#overview h3 > a`);
     }
 
     async goToHomePage(): Promise<void> {
@@ -97,5 +101,45 @@ export class HomePage {
         await this.ccLink.click();
         await expect(this.page.url()).toContain(this.ccUrl);
     }
+
+        async verifyInformationTitles(): Promise<void> {
+            const urls = [
+                `/dynamicid`,
+                `/classattr`,
+                `/hiddenlayers`,
+                `/loaddelay`,
+                `/ajax`,
+                `/clientdelay`,
+                `/click`,
+                `/textinput`,
+                `/scrollbars`,
+                `/dynamictable`,
+                `/verifytext`,
+                `/progressbar`,
+                `/visibility`,
+                `/sampleapp`,
+                `/mouseover`,
+                `/nbsp`,
+                `/overlapped`,
+                `/shadowdom`
+            ];
+
+            const container = await this.informationTitles.count();
+            for (let i = 0; i < container; i++) {
+                await expect(this.informationTitles.nth(i)).toBeVisible();
+                const textContent = await this.informationTitles.nth(i).textContent();
+                if (!textContent) continue;
+
+                if (i < urls.length) {
+                    await this.containerTitles.nth(i).click();
+
+                    if (i === 3) {
+                        await this.page.waitForTimeout(5000);
+                    }
+                    await expect(this.page.url()).toContain(urls[i]);
+                    await this.page.goBack();
+                }
+            }
+        }
 }
 
