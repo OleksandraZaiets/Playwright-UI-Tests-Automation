@@ -1,14 +1,11 @@
 import { Page, BrowserContext, Locator, expect } from "@playwright/test";
+import { BasePage } from "./BasePage";
+import { URLS, ENDPOINTS } from "../constants/constants";
 
-export class HomePage {
-    readonly page: Page;
-    readonly context: BrowserContext;
+export class HomePage extends BasePage {
     readonly uitapLink: Locator;
-    readonly homePageUrl: string;
     readonly homeLink: Locator;
-    readonly homePageFirstUrl: string;
     readonly resourcesLink: Locator;
-    readonly resourcesPageUrl: string;
     readonly titleUi: Locator;
     readonly quoteAristotle: Locator;
     readonly noteInTable: Locator;
@@ -16,18 +13,14 @@ export class HomePage {
     readonly rubiksCubeImg: Locator;
     readonly rubiksCubeLink: Locator;
     readonly ccLink: Locator;
-    readonly pngUrl: string;
-    readonly ccUrl: string;
+    readonly informationTitles: Locator;
+    readonly containerTitles: Locator;
 
-    constructor (page: Page, context: BrowserContext) {
-        this.page = page;
-        this.context = context;
+    constructor(page: Page, context: BrowserContext) {
+        super(page, context);
         this.uitapLink = page.getByRole(`link`, { name: `UITAP` });
-        this.homePageUrl = `uitestingplayground.com/`;
         this.homeLink = page.getByRole(`link`, { name: `HOME` });
-        this.homePageFirstUrl = `/home`;
         this.resourcesLink = page.getByRole(`link`, { name: `Resources` });
-        this.resourcesPageUrl = `/resources`;
         this.titleUi = page.locator(`#title`);
         this.quoteAristotle = page.locator(`#citation`);
         this.noteInTable = page.locator(`.alert`);
@@ -35,12 +28,13 @@ export class HomePage {
         this.rubiksCubeImg = page.locator(`.img-fluid`);
         this.rubiksCubeLink = page.getByRole(`link`, { name: `Rubik's Cube` });
         this.ccLink = page.getByRole(`link`, { name: `CC 4.0 BY-NC` });
-        this.pngUrl = `/image`;
-        this.ccUrl = `/licenses`;
+        this.informationTitles = page.locator(`#overview .row .col-sm`);
+        this.containerTitles = page.locator(`section#overview h3 > a`);
     }
 
+
     async goToHomePage(): Promise<void> {
-        await this.page.goto("/");
+        await this.goTo(URLS.HOME_URL);
     }
 
     async clickOnUitap(): Promise<void> {
@@ -48,7 +42,7 @@ export class HomePage {
     }
 
     async verifyRedirectToHomePage(): Promise<void> {
-        await expect(this.page.url()).toContain(this.homePageUrl);
+        await expect(this.page.url()).toContain(URLS.BASE_HOME_URL);
     }
 
     async clickOnHome(): Promise<void> {
@@ -56,7 +50,7 @@ export class HomePage {
     }
 
     async verifyRedirectToFirstHomePage(): Promise<void> {
-        await expect(this.page.url()).toContain(this.homePageFirstUrl);
+        await expect(this.page.url()).toContain(ENDPOINTS.HOME);
     }
 
     async clickOnResources(): Promise<void> {
@@ -64,7 +58,7 @@ export class HomePage {
     }
 
     async verifyRedirectToResourcesPage(): Promise<void> {
-        await expect(this.page.url()).toContain(this.resourcesPageUrl);
+        await expect(this.page.url()).toContain(URLS.RESOURCES_URL);
     }
 
     async verifyTitle(): Promise<void> {
@@ -89,13 +83,40 @@ export class HomePage {
 
     async clickOnRubiksCubeAndVerifyRedirect(): Promise<void> {
         await this.rubiksCubeLink.click();
-        await expect(this.page.url()).toContain(this.pngUrl);
+        await expect(this.page.url()).toContain(ENDPOINTS.IMAGE);
         await this.page.goBack();
     }
 
     async clickOnCcAndVerifyRedirect(): Promise<void> {
         await this.ccLink.click();
-        await expect(this.page.url()).toContain(this.ccUrl);
+        await expect(this.page.url()).toContain(ENDPOINTS.LICENSES);
+    }
+
+    async verifyInformationTitles(): Promise<void> {
+            const urls = [
+                ENDPOINTS.DYNAMICID, ENDPOINTS.CLASSATTR, ENDPOINTS.HIDDENLAYERS, ENDPOINTS.LOADDELAY,
+                ENDPOINTS.AJAX, ENDPOINTS.CLIENTDELAY, ENDPOINTS.CLICK, ENDPOINTS.TEXTINPUT,
+                ENDPOINTS.SCROLLBARS, ENDPOINTS.DYNAMICTABLE, ENDPOINTS.VERIFYTEXT, ENDPOINTS.PROGRESSBAR,
+                ENDPOINTS.VISIBILITY, ENDPOINTS.SAMPLEAPP, ENDPOINTS.MOUSEOVER, ENDPOINTS.NBSP,
+                ENDPOINTS.OVERLAPPED, ENDPOINTS.SHADOWDOM
+            ];
+
+            const container = await this.informationTitles.count();
+            for (let i = 0; i < container; i++) {
+                await expect(this.informationTitles.nth(i)).toBeVisible();
+                const textContent = await this.informationTitles.nth(i).textContent();
+                if (!textContent) continue;
+
+                if (i < urls.length) {
+                    await this.containerTitles.nth(i).click();
+
+                    if (i === 3) {
+                        await this.page.waitForURL(`**${ENDPOINTS.LOADDELAY}`);
+                    }
+                    await expect(this.page.url()).toContain(urls[i]);
+                    await this.page.goBack();
+                }
+            }
     }
 }
 

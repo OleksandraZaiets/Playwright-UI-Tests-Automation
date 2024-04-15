@@ -25,7 +25,7 @@ test.describe("Home page", () => {
         });
     });
 
-    test(`Verify playground section @ui`, async ({homePage}) => {
+    test(`Verify playground section`, async ({homePage}) => {
         await test.step(`Verify section title “UI Test Automation Playground`, async () => {
             await homePage.verifyTitle();
         });
@@ -52,6 +52,12 @@ test.describe("Home page", () => {
 
         await test.step(`Click on the CC 4.0 BY-NC link`, async () => {
             await homePage.clickOnCcAndVerifyRedirect();
+        });
+    });
+
+    test(`Verify information section`, async ({homePage}) => {
+        await test.step(`Verify all information titles with descriptions, click on all titles and verify redirect`, async () => {
+            await homePage.verifyInformationTitles();
         });
     });
 });
